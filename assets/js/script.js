@@ -1,7 +1,3 @@
-/* Author: 
-
-*/
-
 showtask();
 let addtaskinput = document.getElementById("addtaskinput");
 let addtaskbtn = document.getElementById("addtaskbtn");
@@ -9,7 +5,8 @@ let addQuantity = document.getElementById("addQuantity");
 
 addtaskbtn.addEventListener("click", function(){
     addtaskinputval = addtaskinput.value;
-    if(addtaskinputval.trim()!=0){
+    addQuantityval = addQuantity.value;
+    if(addtaskinputval.trim()!=0 && addQuantityval.trim()!=0){
         let webtask = localStorage.getItem("localtask");
         if(webtask == null){
             taskObj = [];
@@ -17,9 +14,10 @@ addtaskbtn.addEventListener("click", function(){
         else{
             taskObj = JSON.parse(webtask);
         }
-        taskObj.push({'task_name':addtaskinputval, 'completeStatus':false});
+        taskObj.push({'task_name':addtaskinputval, 'quantity':addQuantityval, 'completeStatus':false});
         localStorage.setItem("localtask", JSON.stringify(taskObj));
         addtaskinput.value = '';
+        addQuantity.value = '';
     }
     showtask();
 })
@@ -37,14 +35,18 @@ function showtask(){
     let addedtasklist = document.getElementById("addedtasklist");
     taskObj.forEach((item, index) => {
 
-        if(item.completeStatus==true){
-            taskCompleteValue = `<td class="completed">${item.task_name}</td>`;
-        }else{
-            taskCompleteValue = `<td>${item.task_name}</td>`;
-        }
+        taskCompleteValue = `<td>${item.task_name}</td>`;
+        taskQuantityValue = `<td>${item.quantity}</td>`;
+
+        // if(item.completeStatus==true){
+        //     taskCompleteValue = `<td class="completed">${item.task_name}</td>`;
+        // }else{
+        //     taskCompleteValue = `<td>${item.task_name}</td>`;
+        // }
         html += `<tr>
                     <th scope="row">${index+1}</th>
                     ${taskCompleteValue}
+                    ${taskQuantityValue}
                     <td><button type="button" onclick="edittask(${index})" class="text-primary"><i class="fa fa-edit"></i>Edit</button></td>
                     <td><button type="button" onclick="deleteitem(${index})" class="text-danger"><i class="fa fa-trash"></i>Delete</button></td>
                 </tr>`;
@@ -62,6 +64,7 @@ function edittask(index){
     let taskObj = JSON.parse(webtask); 
     
     addtaskinput.value = taskObj[index]['task_name'];
+    addQuantity.value = taskObj[index]['quantity'];
     addtaskbtn.style.display="none";
     savetaskbtn.style.display="block";
 }
@@ -75,14 +78,16 @@ savetaskbtn.addEventListener("click", function(){
     let saveindex = document.getElementById("saveindex").value;
     
     for (keys in taskObj[saveindex]) {
-        if(keys == 'task_name'){
+        if(keys == 'task_name' || keys == 'quantity'){
             taskObj[saveindex].task_name = addtaskinput.value;
+            taskObj[saveindex].quantity = addQuantity.value;
         }
       }
     savetaskbtn.style.display="none";
     addtaskbtn.style.display="block";
     localStorage.setItem("localtask", JSON.stringify(taskObj));
     addtaskinput.value='';
+    addQuantity.value='';
     showtask();
 })
 
@@ -117,26 +122,4 @@ deleteallbtn.addEventListener("click", function(){
     showtask();
 
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
